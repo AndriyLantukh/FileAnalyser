@@ -1,7 +1,7 @@
 package my.fileanalyser.test;
 
 import my.fileanalyser.FileAnalyser;
-import my.fileanalyser.model.FileStat;
+import my.fileanalyser.model.LineStat;
 import org.junit.Test;
 
 import java.nio.file.Paths;
@@ -18,7 +18,7 @@ public class LineStatTest {
         FileAnalyser fa = new FileAnalyser(Paths.get("D:\\TEST\\111.txt"));
         fa.analyseLine(sourceLine);
 
-        FileStat.LineStat ls = fa.getLineStatList().get(0);
+        LineStat ls = fa.getLineStatList().get(0);
 
         assertEquals("1234567890", ls.getLongestWord());
         assertEquals("a", ls.getShortestWord());
@@ -42,7 +42,7 @@ public class LineStatTest {
         FileAnalyser fa = new FileAnalyser(Paths.get("D:\\TEST\\111.txt"));
         fa.analyseLine(sourceLine);
 
-        FileStat.LineStat ls = fa.getLineStatList().get(0);
+        LineStat ls = fa.getLineStatList().get(0);
 
         assertEquals(",", ls.getLongestWord());
         assertEquals(",", ls.getShortestWord());

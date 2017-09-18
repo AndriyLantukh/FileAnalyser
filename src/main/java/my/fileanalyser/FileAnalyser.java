@@ -4,6 +4,7 @@ package my.fileanalyser;
 import lombok.Getter;
 import lombok.Setter;
 import my.fileanalyser.model.FileStat;
+import my.fileanalyser.model.LineStat;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class FileAnalyser {
 
     Path path;
-    List<FileStat.LineStat> lineStatList = new ArrayList();
+    List<LineStat> lineStatList = new ArrayList();
     FileStat fileStat;
 
     public FileAnalyser(Path path) {
@@ -67,7 +68,7 @@ public class FileAnalyser {
 
         int avWordLen = line.replace(" ", "").length() / words.length;
 
-        lineStatList.add(new FileStat.LineStat(null, null, longestFirst, shortestFirst, lineLen, avWordLen));
+        lineStatList.add(new LineStat(null, null, longestFirst, shortestFirst, lineLen, avWordLen));
 
     }
 
@@ -79,7 +80,7 @@ public class FileAnalyser {
         String shortest = lineStatList.get(0).getShortestWord();
         int commonLineLen = 0;
         int commonWordLen = 0;
-        for (FileStat.LineStat lineStat : lineStatList) {
+        for (LineStat lineStat : lineStatList) {
             if (lineStat.getLongestWord().length() > longest.length()) {
                 longest = lineStat.getLongestWord();
             }
