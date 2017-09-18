@@ -1,4 +1,4 @@
-package my.fileanalyser;
+package my.fileanalyser.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,16 +9,16 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class LineStat {
+public class FileStat {
 
-    private LineStat() {
+    private FileStat() {
     }
 
     private Integer id;
-    private Integer fileId;
+    private String fileName;
     private String longestWord;
     private String shortestWord;
-    private int lineLength;
+    private int averageLineLength;
     private int averageWordLength;
 }
 

@@ -1,6 +1,8 @@
 package my.fileanalyser;
 
 
+import my.fileanalyser.model.FileStat;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,7 @@ public class DbConnector {
         }
     }
 
-    private void saveLinesStat(Connection conn, List<LineStat> lineStatList) {
+    private void saveLinesStat(Connection conn, List<FileStat.LineStat> lineStatList) {
         if (conn == null || lineStatList == null || lineStatList.size() == 0) {
             return;
         }
@@ -79,7 +81,7 @@ public class DbConnector {
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO LINESTAT (FILEID, LONGEST, SHORTEST, LINELEN, AVERAGELEN) VALUES");
 
-            for (LineStat lineStat : lineStatList) {
+            for (FileStat.LineStat lineStat : lineStatList) {
                 String oneRow =  "(" + lineStat.getFileId() + ", '"
                     + lineStat.getLongestWord() + "','"
                     + lineStat.getShortestWord() + "',"
@@ -139,7 +141,7 @@ public class DbConnector {
         return fileStatList;
     }
 
-    public List<LineStat> getLineStatList(int fileId) {
+    public List<FileStat.LineStat> getLineStatList(int fileId) {
         Connection conn = getConnection();
         if (conn != null) {
             return getLineStatList(conn, fileId);
@@ -147,11 +149,11 @@ public class DbConnector {
         return null;
     }
 
-    public List<LineStat> getLineStatList(Connection conn, int fileId) {
+    public List<FileStat.LineStat> getLineStatList(Connection conn, int fileId) {
         if (conn == null) {
             return null;
         }
-        List<LineStat> lineStatList = new ArrayList();
+        List<FileStat.LineStat> lineStatList = new ArrayList();
         try {
             Statement st = conn.createStatement();
 
@@ -162,7 +164,7 @@ public class DbConnector {
             ResultSet rs = st.executeQuery(query);
 
             while (rs.next()) {
-                lineStatList.add(new LineStat(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getInt(6)));
+                lineStatList.add(new FileStat.LineStat(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getInt(6)));
             }
 
             rs.close();

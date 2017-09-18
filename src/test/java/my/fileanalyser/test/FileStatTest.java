@@ -1,8 +1,7 @@
 package my.fileanalyser.test;
 
 import my.fileanalyser.FileAnalyser;
-import my.fileanalyser.FileStat;
-import my.fileanalyser.LineStat;
+import my.fileanalyser.model.FileStat;
 import org.junit.Test;
 
 import java.nio.file.Paths;
