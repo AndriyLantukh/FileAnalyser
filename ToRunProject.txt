@@ -1,0 +1,10 @@
+1. Install PostgreSQL 9.6.
+2. Crate user "myuser"
+3. make command "GRANT postgres TO myuser;".
+4. Use file "filesData.backup" in root of this project to create db.
+5. DB port must be 5432.
+6. You can run fileAnalyse.jar from command prompt. Specify path to file or directory.
+   example: "java -jar fileAnalyse-1.0-SNAPSHOT-jar-with-dependencies.jar D:\test"
+   fileAnalyser expected files in UTF-8.
+7. Run client-server application as Spring Boot application.
+

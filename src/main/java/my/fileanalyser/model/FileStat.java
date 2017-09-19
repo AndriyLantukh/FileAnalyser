@@ -14,6 +14,7 @@ public class FileStat {
     private FileStat() {
     }
 
+
     private Integer id;
     private String fileName;
     private String longestWord;

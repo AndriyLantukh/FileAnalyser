@@ -1,0 +1,163 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 9.6.5
+
+-- Started on 2017-09-17 21:53:08
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 1 (class 3079 OID 12387)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2138 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 186 (class 1259 OID 16443)
+-- Name: filestat; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE filestat (
+    id integer NOT NULL,
+    filename text NOT NULL,
+    longest text NOT NULL,
+    shortest text NOT NULL,
+    avlinelen integer NOT NULL,
+    avwordlen integer NOT NULL
+);
+
+
+ALTER TABLE filestat OWNER TO postgres;
+
+--
+-- TOC entry 185 (class 1259 OID 16441)
+-- Name: filestat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE filestat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE filestat_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2139 (class 0 OID 0)
+-- Dependencies: 185
+-- Name: filestat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE filestat_id_seq OWNED BY filestat.id;
+
+
+--
+-- TOC entry 188 (class 1259 OID 16470)
+-- Name: linestat; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE linestat (
+    id integer NOT NULL,
+    fileid integer NOT NULL,
+    longest text NOT NULL,
+    shortest text NOT NULL,
+    linelen integer NOT NULL,
+    averagelen integer NOT NULL
+);
+
+
+ALTER TABLE linestat OWNER TO postgres;
+
+--
+-- TOC entry 187 (class 1259 OID 16468)
+-- Name: linestat_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE linestat_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE linestat_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2140 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: linestat_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE linestat_id_seq OWNED BY linestat.id;
+
+
+--
+-- TOC entry 2009 (class 2604 OID 16446)
+-- Name: filestat id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY filestat ALTER COLUMN id SET DEFAULT nextval('filestat_id_seq'::regclass);
+
+
+--
+-- TOC entry 2010 (class 2604 OID 16473)
+-- Name: linestat id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY linestat ALTER COLUMN id SET DEFAULT nextval('linestat_id_seq'::regclass);
+
+
+--
+-- TOC entry 2012 (class 2606 OID 16451)
+-- Name: filestat filestat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY filestat
+    ADD CONSTRAINT filestat_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2014 (class 2606 OID 16478)
+-- Name: linestat linestat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY linestat
+    ADD CONSTRAINT linestat_pkey PRIMARY KEY (id);
+
+
+-- Completed on 2017-09-17 21:53:08
+
+--
+-- PostgreSQL database dump complete
+--
+
