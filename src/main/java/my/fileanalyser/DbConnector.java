@@ -3,6 +3,7 @@ package my.fileanalyser;
 
 import my.fileanalyser.model.FileStat;
 import my.fileanalyser.model.LineStat;
+import org.postgresql.ds.PGPoolingDataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,17 +14,34 @@ public class DbConnector {
     private DbConnector() {
     }
 
-    public DbConnector(String dbUrl, String login, String password) {
+    public DbConnector(String serverName, String dbName, String login, String password, String dataSourceName, int maxConnections) {
+        this.serverName = serverName;
+        this.dbName = dbName;
+        this.login = login;
+        this.password = password;
+        this.dataSourceName = dataSourceName;
+        this.maxConnections = maxConnections;
+    }
+
+    public DbConnector(String driverName, String dbUrl, String login, String password) {
+        this.driverName = driverName;
         this.dbUrl = dbUrl;
         this.login = login;
         this.password = password;
     }
 
+    private String driverName;
     private String dbUrl;
+
     private String login;
     private String password;
 
-    Connection conn = null;
+    private String serverName;
+    private String dbName;
+    private String dataSourceName;
+    private int maxConnections;
+
+    PGPoolingDataSource source;
 
     public FileStat saveFileStat(FileStat fileStat) {
         Connection conn = getConnection();
@@ -83,11 +101,11 @@ public class DbConnector {
             sb.append("INSERT INTO LINESTAT (FILEID, LONGEST, SHORTEST, LINELEN, AVERAGELEN) VALUES");
 
             for (LineStat lineStat : lineStatList) {
-                String oneRow =  "(" + lineStat.getFileId() + ", '"
-                    + lineStat.getLongestWord() + "','"
-                    + lineStat.getShortestWord() + "',"
-                    + lineStat.getLineLength() + ","
-                    + lineStat.getAverageWordLength() + "),";
+                String oneRow = "(" + lineStat.getFileId() + ", '"
+                        + lineStat.getLongestWord() + "','"
+                        + lineStat.getShortestWord() + "',"
+                        + lineStat.getLineLength() + ","
+                        + lineStat.getAverageWordLength() + "),";
                 sb.append(oneRow);
             }
             sb.deleteCharAt(sb.length() - 1);
@@ -98,7 +116,7 @@ public class DbConnector {
             int index = 0;
             while (rs.next()) {
                 lineStatList.get(index).setId(rs.getInt(1));
-               index++;
+                index++;
             }
 
             rs.close();
@@ -159,8 +177,8 @@ public class DbConnector {
             Statement st = conn.createStatement();
 
             String query = "SELECT * FROM LINESTAT " +
-                           "WHERE FILEID ='" + fileId + "' " +
-                           "ORDER BY ID asc;";
+                    "WHERE FILEID ='" + fileId + "' " +
+                    "ORDER BY ID asc;";
 
             ResultSet rs = st.executeQuery(query);
 
@@ -193,21 +211,19 @@ public class DbConnector {
             System.err.println(se.getMessage());
         }
         return rs;
-   }
+    }
 
     private Connection getConnection() {
-        if (conn == null) {
-            try {
-                Class.forName("org.postgresql.Driver");
-                conn = DriverManager.getConnection(dbUrl, login, password);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                System.exit(1);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.exit(2);
-            }
-
+        Connection conn = null;
+        try {
+            Class.forName(driverName);
+            conn = DriverManager.getConnection(dbUrl, login, password);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(2);
         }
         if (conn == null) {
             System.err.println("Can't create connection to " + dbUrl + " " + login + " " + password);
@@ -215,13 +231,59 @@ public class DbConnector {
         return conn;
     }
 
+    public void saveData(FileAnalyser data) {
+        PGPoolingDataSource source = getSource();
+        if (source == null) {
+            return;
+        }
+
+        Connection conn = null;
+        try {
+            conn = source.getConnection();
+            FileStat fs = saveFileStat(conn, data.getFileStat());
+            if (fs == null || fs.getId() == null) {
+                return;
+            }
+            data.getLineStatList().forEach(lineStat -> lineStat.setFileId(fs.getId()));
+            saveLinesStat(conn, data.getLineStatList());
+            System.out.println("Data saved " + fs.toString());
+        } catch (SQLException e) {
+            System.err.println("Can't get connection");
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+    }
+
+
+    private synchronized PGPoolingDataSource  getSource() {
+        if (source == null) {
+            if (dbName != null) {
+                source = new PGPoolingDataSource();
+                source.setDataSourceName(dataSourceName);
+                source.setServerName(serverName);
+                source.setDatabaseName(dbName);
+                source.setUser(login);
+                source.setPassword(password);
+                source.setMaxConnections(maxConnections);
+            } else {
+                System.err.println("There is no dbName to create connection pool");
+            }
+        }
+        return source;
+    }
+
     public void saveFileCommonStat(FileAnalyser fileAnalyser) {
-       FileStat fs = saveFileStat(fileAnalyser.getFileStat());
-       if (fs == null || fs.getId() == null) {
-           return;
-       }
-       fileAnalyser.getLineStatList().forEach(lineStat -> lineStat.setFileId(fs.getId()));
-       saveLinesStat(fileAnalyser.getLineStatList());
+        FileStat fs = saveFileStat(fileAnalyser.getFileStat());
+        if (fs == null || fs.getId() == null) {
+            return;
+        }
+        fileAnalyser.getLineStatList().forEach(lineStat -> lineStat.setFileId(fs.getId()));
+        saveLinesStat(fileAnalyser.getLineStatList());
 
         System.out.println("Data saved " + fs.toString());
     }

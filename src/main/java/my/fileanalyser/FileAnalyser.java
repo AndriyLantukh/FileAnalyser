@@ -53,7 +53,7 @@ public class FileAnalyser {
         int lineLen = line.length();
         line = line.trim();
         if (line.isEmpty()) {
-            System.out.println("Line contains only spaces or empty. Will be skipped.");
+       //     System.out.println("Line contains only spaces or empty. Will be skipped.");
             return;
         }
 
