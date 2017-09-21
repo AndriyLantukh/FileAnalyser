@@ -22,13 +22,13 @@ public class AnalyseFileMain {
 
         long startTime = System.currentTimeMillis();
 
-        if (args.length == 0) {
-            System.out.println("Please specify file to analyse.");
-            return;
-        }
-
-        String filePath = args[0];
-//        String filePath = "D:\\TEST";
+//        if (args.length == 0) {
+//            System.out.println("Please specify file to analyse.");
+//            return;
+//        }
+//
+//        String filePath = args[0];
+        String filePath = "D:\\TEST";
 
 
         ConcurrentLinkedQueue<Path> fileQueue = getFiles(filePath);
@@ -42,13 +42,17 @@ public class AnalyseFileMain {
             return;
         }
 
+        //with concurrency
         ExecutorService executor = Executors.newFixedThreadPool(5);
         while (!fileQueue.isEmpty()) {
             Runnable worker = new FileWorkerThread(dbConnector, fileQueue.poll());
             executor.execute(worker);
         }
         executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
 
+        //without concurrency
 //        fileQueue.forEach(thePath -> {
 //            FileAnalyser fileAnalyser = new FileAnalyser(thePath);
 //            fileAnalyser.analyseFile();
